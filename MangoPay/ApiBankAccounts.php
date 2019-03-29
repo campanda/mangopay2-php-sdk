@@ -18,4 +18,14 @@ class ApiBankAccounts extends Libraries\ApiBase
     {
         return $this->GetList('transactions_get_for_bank_account', $pagination, '\MangoPay\Transaction', $bankAccountId, $filter, $sorting);
     }
+
+    /**
+     * @param \MangoPay\BankAccount $bankAccount
+     * @param string|null $idempotencyKey
+     * @return \MangoPay\BankAccount
+     */
+    public function Create($bankAccount, $idempotencyKey = null)
+    {
+        return $this->CreateObject('bank_accounts_create', $bankAccount, '\MangoPay\BankAccount', null, null, $idempotencyKey);
+    }
 }
