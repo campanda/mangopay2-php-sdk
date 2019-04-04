@@ -24,8 +24,18 @@ class ApiBankAccounts extends Libraries\ApiBase
      * @param string|null $idempotencyKey
      * @return \MangoPay\BankAccount
      */
-    public function Create($bankAccount, $idempotencyKey = null)
+    public function CreateIBAN($bankAccount, $idempotencyKey = null)
     {
         return $this->CreateObject('users_createbankaccounts_iban', $bankAccount, '\MangoPay\BankAccount', $bankAccount->UserId, null, $idempotencyKey);
+    }
+
+    /**
+     * @param $bankAccount
+     * @param null $idempotencyKey
+     * @return object
+     */
+    public function CreateGB($bankAccount, $idempotencyKey = null)
+    {
+        return $this->CreateObject('users_createbankaccounts_gb', $bankAccount, '\MangoPay\BankAccount', $bankAccount->UserId, null, $idempotencyKey);
     }
 }
