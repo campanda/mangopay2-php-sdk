@@ -131,16 +131,73 @@ class CardPreAuthorization extends Libraries\EntityBase
     public $SecurityInfo;
 
     /**
+     * Boolean. The value is 'true' if the MultiCapture was used
+     * @var bool
+     */
+    public $MultiCapture;
+
+    /**
+     * RemainingFunds
+     * @var \MangoPay\Money
+     */
+    public $RemainingFunds;
+
+    /**
+     * IpAddress
+     * @var string
+     */
+    public $IpAddress;
+
+    /**
+     * BrowserInfo
+     * @var BrowserInfo
+     */
+    public $BrowserInfo;
+
+    /**
+     * Shipping
+     * @var Shipping
+     */
+    public $Shipping;
+
+    /**
+     * Requested3DSVersion
+     * @var string
+     */
+    public $Requested3DSVersion;
+
+    /**
+     * Applied3DSVersion
+     * @var string
+     */
+    public $Applied3DSVersion;
+
+    /**
+     * Information of the card
+     * @var object
+     */
+    public $CardInfo;
+
+    /**
+     * Allowed values: ECommerce (default), TelephoneOrder
+     *
+     * The channel through which the user provided their card details, used to indicate mail-order and telephone-order (MOTO) payments.
+     * @var string
+     */
+    public $PaymentCategory;
+
+    /**
      * Get array with mapping which property is object and what type of object
      * @return array
      */
     public function GetSubObjects()
     {
-        return array(
+        return [
             'DebitedFunds' => '\MangoPay\Money',
             'Billing' => '\MangoPay\Billing',
-            'SecurityInfo' => '\MangoPay\SecurityInfo'
-        );
+            'SecurityInfo' => '\MangoPay\SecurityInfo',
+            'RemainingFunds' => '\MangoPay\Money',
+        ];
     }
 
     /**

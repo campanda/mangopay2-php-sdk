@@ -1,4 +1,5 @@
 <?php
+
 namespace MangoPay;
 
 /**
@@ -15,17 +16,22 @@ class ApiWallets extends Libraries\ApiBase
     {
         return $this->CreateObject('wallets_create', $wallet, '\MangoPay\Wallet', null, null, $idempotencyKey);
     }
-    
+
     /**
      * Get wallet
      * @param string $walletId Wallet identifier
+     * @param string $scaContext Optional. Possible values: USER_NOT_PRESENT, USER_PRESENT
+     * In case USER_PRESENT is used and SCA is required, an error containing the RedirectUrl will be thrown
      * @return \MangoPay\Wallet Wallet object returned from API
      */
-    public function Get($walletId)
+    public function Get($walletId, $scaContext = null)
     {
-        return $this->GetObject('wallets_get', $walletId, '\MangoPay\Wallet');
+        if ($scaContext != null) {
+            return $this->GetObject('wallets_get_sca', '\MangoPay\Wallet', $walletId, $scaContext);
+        }
+        return $this->GetObject('wallets_get', '\MangoPay\Wallet', $walletId);
     }
-    
+
     /**
      * Save wallet
      * @param Wallet $wallet Wallet object to save

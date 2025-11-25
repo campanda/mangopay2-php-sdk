@@ -58,7 +58,7 @@ class Configuration
     /**
      * Set the cURL response timeout limit (in seconds)
      */
-    public $CurlResponseTimeout = 80;
+    public $CurlResponseTimeout = 30;
 
     /**
      * Set the proxy host
@@ -69,4 +69,10 @@ class Configuration
      * Set the user:password proxy
      */
     public $UserPasswordProxy = null;
+
+    /**
+     * Set to true for uk traffic
+     * @deprecated Will be removed in future versions
+     */
+    public $UKHeaderFlag = false;
 }

@@ -14,7 +14,7 @@ class ApiCards extends Libraries\ApiBase
      */
     public function Get($cardId)
     {
-        return $this->GetObject('card_get', $cardId, '\MangoPay\Card');
+        return $this->GetObject('card_get', '\MangoPay\Card', $cardId);
     }
 
     /**
@@ -45,7 +45,7 @@ class ApiCards extends Libraries\ApiBase
      * Gets a Card's PreAuthorizations
      * @param int $cardId ID of the Card for which to retrieve PreAuthorizations
      * @param \MangoPay\Pagination $pagination Pagination object
-     * @param \MangoPay\FilterPreAuthorizations filter Filtering object
+     * @param \MangoPay\FilterPreAuthorizations $filter Filtering object
      * @param \MangoPay\Sorting $sorting Sorting object
      * @return \MangoPay\CardPreAuthorization[] List of the Card's PreAuthorizations
      */
@@ -65,5 +65,49 @@ class ApiCards extends Libraries\ApiBase
     public function GetTransactions($cardId, & $pagination = null, $filter = null, $sorting = null)
     {
         return $this->GetList('transactions_get_for_card', $pagination, '\MangoPay\Transaction', $cardId, $filter, $sorting);
+    }
+
+    /**
+     * Validate a card
+     * @param $cardId
+     * @return \MangoPay\CardValidation
+     * @throws Libraries\Exception
+     */
+    public function ValidateCard($cardId, $cardValidation)
+    {
+        return $this->ExecutePostRequest('card_validate', $cardValidation, '\MangoPay\CardValidation', $cardId);
+    }
+
+    /**
+     * Get card validation
+     * @param $cardId, $cardValidationId
+     * @return \MangoPay\Card
+     * @throws Libraries\Exception
+     */
+    public function GetCardValidation($cardId, $cardValidationId)
+    {
+        return $this->GetObject('get_card_validation', '\MangoPay\CardValidation', $cardId, $cardValidationId);
+    }
+
+    /**
+     * Gets a list of transactions having for a card fingerprint.
+     * The fingerprint is a hash uniquely generated per 16-digit card number.
+     *
+     * @param string $fingerprint The fingerprint hash
+     * @param Pagination $pagination Pagination object
+     * @param Sorting $sorting Sorting object
+     * @param FilterTransactions $filter Filter object
+     * @return Transaction[] List of Transactions corresponding to provided fingerprint
+     */
+    public function GetTransactionsByFingerprint($fingerprint, $filter = null, $pagination = null, $sorting = null)
+    {
+        return $this->GetList(
+            'transactions_get_by_fingerprint',
+            $pagination,
+            '\MangoPay\Transaction',
+            $fingerprint,
+            $filter,
+            $sorting
+        );
     }
 }

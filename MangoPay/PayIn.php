@@ -1,4 +1,5 @@
 <?php
+
 namespace MangoPay;
 
 /**
@@ -8,12 +9,12 @@ class PayIn extends Transaction
 {
     /**
      * Credited wallet Id
-     * @var int
+     * @var string
      */
     public $CreditedWalletId;
 
     /**
-     * PaymentType {CARD, BANK_WIRE, DIRECT_DEBIT, PAYPAL }
+     * PaymentType {CARD, BANK_WIRE, DIRECT_DEBIT, PAYPAL, PAYCONIQ }
      * @var string
      */
     public $PaymentType;
@@ -37,13 +38,34 @@ class PayIn extends Transaction
     public $ExecutionDetails;
 
     /**
+     * Recurring PayIn Registration Id
+     * @var string
+     */
+    public $RecurringPayinRegistrationId;
+
+    /**
+     * Allowed values: ECommerce (default), TelephoneOrder
+     *
+     * The channel through which the user provided their card details, used to indicate mail-order and telephone-order (MOTO) payments.
+     * @var string
+     */
+    public $PaymentCategory;
+
+    /**
+     * The unique reference generated for the profiling session,
+     * used by the fraud prevention solution to produce recommendations for the transaction using the profiling data
+     * @var string
+     */
+    public $ProfilingAttemptReference;
+
+    /**
      * Get array with mapping which property depends on other property
      * @return array
      */
     public function GetDependsObjects()
     {
-        return array(
-            'PaymentType' => array(
+        return [
+            'PaymentType' => [
                 '_property_name' => 'PaymentDetails',
                 PayInPaymentType::Card => '\MangoPay\PayInPaymentDetailsCard',
                 PayInPaymentType::Preauthorized => '\MangoPay\PayInPaymentDetailsPreAuthorized',
@@ -51,16 +73,32 @@ class PayIn extends Transaction
                 PayInPaymentType::DirectDebit => '\MangoPay\PayInPaymentDetailsDirectDebit',
                 PayInPaymentType::DirectDebitDirect => '\MangoPay\PayInPaymentDetailsDirectDebitDirect',
                 PayInPaymentType::PayPal => '\MangoPay\PayInPaymentDetailsPaypal',
+                PayInPaymentType::ApplePay => 'MangoPay\PayInPaymentDetailsApplePay',
+                PayInPaymentType::GooglePay => 'MangoPay\PayInPaymentDetailsGooglePay',
+                PayInPaymentType::GooglePayV2 => 'MangoPay\PayInPaymentDetailsGooglePay',
+                PayInPaymentType::Payconiq => 'MangoPay\PayInPaymentDetailsPayconiq',
+                PayInPaymentType::Mbway => 'MangoPay\PayInPaymentDetailsMbway',
+                PayInPaymentType::Multibanco => 'MangoPay\PayInPaymentDetailsMultibanco',
+                PayInPaymentType::Satispay => 'MangoPay\PayInPaymentDetailsSatispay',
+                PayInPaymentType::Blik => 'MangoPay\PayInPaymentDetailsBlik',
+                PayInPaymentType::Klarna => 'MangoPay\PayInPaymentDetailsKlarna',
+                PayInPaymentType::Ideal => 'MangoPay\PayInPaymentDetailsIdeal',
+                PayInPaymentType::Giropay => 'MangoPay\PayInPaymentDetailsGiropay',
+                PayInPaymentType::Bancontact => 'MangoPay\PayInPaymentDetailsBancontact',
+                PayInPaymentType::Bizum => 'MangoPay\PayInPaymentDetailsBizum',
+                PayInPaymentType::Swish => 'MangoPay\PayInPaymentDetailsSwish',
+                PayInPaymentType::Twint => 'MangoPay\PayInPaymentDetailsTwint',
+                PayInPaymentType::PayByBank => 'MangoPay\PayInPaymentDetailsPayByBank',
                 // ...and more in future...
-            ),
-            'ExecutionType' => array(
+            ],
+            'ExecutionType' => [
                 '_property_name' => 'ExecutionDetails',
                 PayInExecutionType::Web => '\MangoPay\PayInExecutionDetailsWeb',
                 PayInExecutionType::Direct => '\MangoPay\PayInExecutionDetailsDirect',
-                PayInExecutionType::ExternalInstruction => '\MangoPay\PayInExecutionDetailsExternalInstruction',                
+                PayInExecutionType::ExternalInstruction => '\MangoPay\PayInExecutionDetailsExternalInstruction',
                 // ...and more in future...
-            )
-        );
+            ]
+        ];
     }
 
     /**

@@ -1,4 +1,5 @@
 <?php
+
 namespace MangoPay;
 
 /**
@@ -15,8 +16,9 @@ class ApiReports extends Libraries\ApiBase
     {
         $type = $reportRequest->ReportType;
 
-        if (is_null($type) || strlen($type) == 0)
+        if (is_null($type) || strlen($type) == 0) {
             throw new Libraries\Exception('Report type property is required when create a report request.');
+        }
 
         switch ($type) {
             case ReportType::Transactions:
@@ -35,7 +37,7 @@ class ApiReports extends Libraries\ApiBase
      */
     public function Get($reportRequestId)
     {
-        return $this->GetObject('reports_get', $reportRequestId, '\MangoPay\ReportRequest');
+        return $this->GetObject('reports_get', '\MangoPay\ReportRequest', $reportRequestId);
     }
 
     /**

@@ -1,4 +1,5 @@
 <?php
+
 namespace MangoPay\Libraries;
 
 /**
@@ -45,9 +46,7 @@ class HttpCurl extends HttpBase
 
         curl_setopt($this->_curlHandle, CURLOPT_RETURNTRANSFER, true);
 
-        if ($this->_root->Config->CertificatesFilePath == '') {
-            curl_setopt($this->_curlHandle, CURLOPT_SSL_VERIFYPEER, false);
-        } else {
+        if (!empty($this->_root->Config->CertificatesFilePath)) {
             curl_setopt($this->_curlHandle, CURLOPT_SSL_VERIFYPEER, true);
             curl_setopt($this->_curlHandle, CURLOPT_CAINFO, $this->_root->Config->CertificatesFilePath);
         }
@@ -84,12 +83,8 @@ class HttpCurl extends HttpBase
          * CURLOPT_SSLVERSION is not set correctly, causing SSL requests issue
          */
         if (getenv('TRAVIS')) {
-            if (!defined('CURL_SSLVERSION_TLSv1_0')) {
-                define('CURL_SSLVERSION_TLSv1_0', 4);
-            }
-
-            $options['curl'][CURLOPT_SSLVERSION] = CURL_SSLVERSION_TLSv1_0;
-            curl_setopt($this->_curlHandle, CURLOPT_SSLVERSION, CURL_SSLVERSION_TLSv1_0);
+            $options['curl'][CURLOPT_SSLVERSION] = CURL_SSLVERSION_TLSv1_2;
+            curl_setopt($this->_curlHandle, CURLOPT_SSLVERSION, CURL_SSLVERSION_TLSv1_2);
         }
     }
 

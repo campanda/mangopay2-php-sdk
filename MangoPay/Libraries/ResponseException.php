@@ -11,7 +11,7 @@ class ResponseException extends Exception
      * Array with response code and corresponding response message
      * @var array
      */
-    private $_responseCodes = array(
+    private $_responseCodes = [
         200 => 'OK',
         204 => 'No Content',
         206 => 'PartialContent',
@@ -24,13 +24,19 @@ class ResponseException extends Exception
         422 => 'Unprocessable entity',
         500 => 'Internal server error',
         501 => 'Not implemented'
-    );
+    ];
 
     /**
      * Error details
      * @var Error
      */
     private $_errorInfo;
+
+    /**
+     * Error code
+     * @var int
+     */
+    private $_code;
 
     /**
      * Request URL
@@ -69,5 +75,14 @@ class ResponseException extends Exception
     public function GetErrorDetails()
     {
         return $this->_errorInfo;
+    }
+
+    /**
+     * Get Error code returned by REST API
+     * @return int
+     */
+    public function GetErrorCode()
+    {
+        return $this->_code;
     }
 }

@@ -1,4 +1,5 @@
 <?php
+
 namespace MangoPay;
 
 /**
@@ -13,7 +14,7 @@ class ApiBankingAliases extends Libraries\ApiBase
      */
     public function Get($bankingAliasId)
     {
-        $response = $this->GetObject('banking_aliases_get', $bankingAliasId);
+        $response = $this->GetObject('banking_aliases_get', null, $bankingAliasId);
         return $this->GetBankingAliasResponse($response);
     }
 
@@ -54,10 +55,10 @@ class ApiBankingAliases extends Libraries\ApiBase
      * @param string $walletId Wallet identifier
      * @return \MangoPay\BankingAlias[] List of banking aliases
      */
-    public function GetAll($walletId, & $pagination = null, $sorting = null)
+    public function GetAll($walletId, &$pagination = null, $sorting = null)
     {
         $bankingAliases = $this->GetList('banking_aliases_all', $pagination, null, $walletId, null, $sorting);
-        return array_map(array($this, "GetBankingAliasResponse"), $bankingAliases);
+        return array_map([$this, "GetBankingAliasResponse"], $bankingAliases);
     }
 
     /**
@@ -70,6 +71,7 @@ class ApiBankingAliases extends Libraries\ApiBase
     {
         if (isset($response->Type)) {
             switch ($response->Type) {
+                case BankingAliasType::GB:
                 case BankingAliasType::IBAN:
                     return $this->CastResponseToEntity($response, '\MangoPay\BankingAliasIBAN');
                 default:
@@ -79,5 +81,4 @@ class ApiBankingAliases extends Libraries\ApiBase
             throw new Libraries\Exception('Unexpected response. Missing BankingAlias Type property');
         }
     }
-
 }

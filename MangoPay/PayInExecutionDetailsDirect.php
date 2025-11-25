@@ -1,4 +1,5 @@
 <?php
+
 namespace MangoPay;
 
 /**
@@ -7,7 +8,7 @@ namespace MangoPay;
 class PayInExecutionDetailsDirect extends Libraries\Dto implements PayInExecutionDetails
 {
     /**
-     * SecureMode { DEFAULT, FORCE }
+     * SecureMode { DEFAULT, FORCE, NO_CHOICE }
      * @var string
      */
     public $SecureMode;
@@ -24,10 +25,10 @@ class PayInExecutionDetailsDirect extends Libraries\Dto implements PayInExecutio
      */
     public $SecureModeRedirectURL;
 
-     /**
-     * SecureModeNeeded
-     * @var bool
-     */
+    /**
+    * SecureModeNeeded
+    * @var bool
+    */
     public $SecureModeNeeded;
 
     /**
@@ -48,10 +49,30 @@ class PayInExecutionDetailsDirect extends Libraries\Dto implements PayInExecutio
      */
     public $Culture;
 
+    /**
+     * Requested3DSVersion
+     * @var string
+     */
+    public $Requested3DSVersion;
+
+    /**
+     * Applied3DSVersion
+     * @var string
+     */
+    public $Applied3DSVersion;
+
+    /**
+     * Card Id
+     * @var string
+     */
+    public $CardId;
+
     public function GetSubObjects()
     {
         $subObjects = parent::GetSubObjects();
         $subObjects['Billing'] = '\MangoPay\Billing';
         $subObjects['SecurityInfo'] = '\MangoPay\SecurityInfo';
+
+        return $subObjects;
     }
 }

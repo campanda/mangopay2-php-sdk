@@ -1,4 +1,5 @@
 <?php
+
 namespace MangoPay;
 
 /**
@@ -11,61 +12,61 @@ class Card extends Libraries\EntityBase
      * @var string
      */
     public $ExpirationDate;
-    
+
     /**
      * Alias
      * @var string
      */
     public $Alias;
-    
+
     /**
      * CardProvider
      * @var string
      */
     public $CardProvider;
-    
+
     /**
      * UserId
      * @var string
      */
     public $UserId;
-    
+
     /**
      * Card type
      * @var string
      */
     public $CardType;
-    
+
     /**
      * Product
      * @var string
      */
     public $Product ;
-    
+
     /**
      * Bank code
      * @var string
      */
     public $BankCode;
-    
+
     /**
      * Country
-     * @var string 
+     * @var string
      */
     public $Country;
-    
+
     /**
      * Active
      * @var bool
      */
     public $Active;
-    
+
     /**
      * Currency
      * @var string
      */
     public $Currency;
-    
+
     /**
      * Validity. For allowed values, see constants in MangoPay\CardValidity
      * @var string
@@ -77,4 +78,10 @@ class Card extends Libraries\EntityBase
      * @var string
      */
     public $Fingerprint;
+
+    /**
+     * The cardholder’s name shown on the payment card.
+     * @var string
+     */
+    public $CardHolderName;
 }

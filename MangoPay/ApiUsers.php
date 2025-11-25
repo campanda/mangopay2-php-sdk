@@ -9,8 +9,8 @@ class ApiUsers extends Libraries\ApiBase
 {
     /**
      * Create a new user
-     * @param UserLegal|UserNatural $user
-     * @return UserLegal|UserNatural User object returned from API
+     * @param UserLegal|UserNatural|UserNaturalSca|UserLegalSca $user
+     * @return UserLegal|UserNatural|UserNaturalSca|UserLegalSca User object returned from API
      * @throws Libraries\Exception If occur Wrong entity class for user
      */
     public function Create($user, $idempotencyKey = null)
@@ -18,8 +18,12 @@ class ApiUsers extends Libraries\ApiBase
         $className = get_class($user);
         if ($className == 'MangoPay\UserNatural') {
             $methodKey = 'users_createnaturals';
+        } elseif ($className == 'MangoPay\UserNaturalSca') {
+            $methodKey = 'users_createnaturals_sca';
         } elseif ($className == 'MangoPay\UserLegal') {
             $methodKey = 'users_createlegals';
+        } elseif ($className == 'MangoPay\UserLegalSca') {
+            $methodKey = 'users_createlegals_sca';
         } else {
             throw new Libraries\Exception('Wrong entity class for user');
         }
@@ -38,7 +42,7 @@ class ApiUsers extends Libraries\ApiBase
     {
         $usersList = $this->GetList('users_all', $pagination, null, null, null, $sorting);
 
-        $users = array();
+        $users = [];
         if (is_array($usersList)) {
             foreach ($usersList as $user) {
                 array_push($users, $this->GetUserResponse($user));
@@ -54,7 +58,18 @@ class ApiUsers extends Libraries\ApiBase
      */
     public function Get($userId)
     {
-        $response = $this->GetObject('users_get', $userId);
+        $response = $this->GetObject('users_get', null, $userId);
+        return $this->GetUserResponse($response);
+    }
+
+    /**
+     * Get SCA natural or legal user by ID
+     * @param string $userId User identifier
+     * @return UserNaturalSca|UserLegalSca User object returned from API
+     */
+    public function GetSca($userId)
+    {
+        $response = $this->GetObject('users_get_sca', null, $userId);
         return $this->GetUserResponse($response);
     }
 
@@ -65,7 +80,18 @@ class ApiUsers extends Libraries\ApiBase
      */
     public function GetNatural($userId)
     {
-        $response = $this->GetObject('users_getnaturals', $userId);
+        $response = $this->GetObject('users_getnaturals', null, $userId);
+        return $this->GetUserResponse($response);
+    }
+
+    /**
+     * Get SCA natural user by ID
+     * @param string $userId User identifier
+     * @return UserNaturalSca User object returned from API
+     */
+    public function GetNaturalSca($userId)
+    {
+        $response = $this->GetObject('users_getnaturals_sca', null, $userId);
         return $this->GetUserResponse($response);
     }
 
@@ -76,7 +102,18 @@ class ApiUsers extends Libraries\ApiBase
      */
     public function GetLegal($userId)
     {
-        $response = $this->GetObject('users_getlegals', $userId);
+        $response = $this->GetObject('users_getlegals', null, $userId);
+        return $this->GetUserResponse($response);
+    }
+
+    /**
+     * Get SCA legal user by ID
+     * @param string $userId User identifier
+     * @return UserLegalSca User object returned from API
+     */
+    public function GetLegalSca($userId)
+    {
+        $response = $this->GetObject('users_getlegals_sca', null, $userId);
         return $this->GetUserResponse($response);
     }
 
@@ -117,6 +154,69 @@ class ApiUsers extends Libraries\ApiBase
     }
 
     /**
+     * Update SCA user
+     * @param UserLegalSca|UserNaturalSca $user
+     * @return UserLegalSca|UserNaturalSca User object returned from API
+     * @throws Libraries\Exception If occur Wrong entity class for user
+     */
+    public function UpdateSca($user)
+    {
+        $className = get_class($user);
+        if ($className == 'MangoPay\UserNaturalSca') {
+            $methodKey = 'users_savenaturals_sca';
+            if (!is_null($user->Address)
+                && is_a($user->Address, "MangoPay\Address")
+                && $user->Address->CanBeNull()) {
+                $user->Address = null;
+            }
+        } elseif ($className == 'MangoPay\UserLegalSca') {
+            $methodKey = 'users_savelegals_sca';
+            if (!is_null($user->HeadquartersAddress)
+                && is_a($user->HeadquartersAddress, "MangoPay\Address")
+                && $user->HeadquartersAddress->CanBeNull()) {
+                $user->HeadquartersAddress = null;
+            }
+            if (!is_null($user->LegalRepresentativeAddress)
+                && is_a($user->LegalRepresentativeAddress, "MangoPay\Address")
+                && $user->LegalRepresentativeAddress->CanBeNull()) {
+                $user->LegalRepresentativeAddress = null;
+            }
+            if (!is_null($user->LegalRepresentative)
+                && is_a($user->LegalRepresentative, "MangoPay\LegalRepresentative")
+                && $user->LegalRepresentative->CanBeNull()) {
+                $user->LegalRepresentative = null;
+            }
+        } else {
+            throw new Libraries\Exception('Wrong entity class for user');
+        }
+
+        $response = $this->SaveObject($methodKey, $user);
+        return $this->GetUserResponse($response);
+    }
+
+    /**
+     * Transition a Natural/Legal Payer to Owner (SCA).
+     * Some parameters may be required based on the kind of transition you do.
+     * @param UserLegalSca|UserNaturalSca|UserLegal|UserNatural $user
+     * @return UserLegalSca|UserNaturalSca|UserLegal|UserNatural User object returned from API
+     * @throws Libraries\Exception If occur Wrong entity class for user
+     */
+    public function Categorize($user)
+    {
+        $className = get_class($user);
+        if ($className == 'MangoPay\UserNaturalSca' || $className == 'MangoPay\UserNatural') {
+            $methodKey = 'users_categorizenaturals_sca';
+        } elseif ($className == 'MangoPay\UserLegalSca' || $className == 'MangoPay\UserLegal') {
+            $methodKey = 'users_categorizelegals_sca';
+        } else {
+            throw new Libraries\Exception('Wrong entity class for user');
+        }
+
+        $response = $this->SaveObject($methodKey, $user);
+        return $this->GetUserResponse($response);
+    }
+
+    /**
      * Create bank account for user
      * @param string $userId User Id
      * @param \MangoPay\BankAccount $bankAccount Entity of bank account object
@@ -145,13 +245,13 @@ class ApiUsers extends Libraries\ApiBase
     /**
      * Get bank account for user
      * @param string $userId User Id
-     * @param int $bankAccountId Bank account Id
+     * @param string $bankAccountId Bank account Id
      *
      * @return \MangoPay\BankAccount Entity of bank account object
      */
     public function GetBankAccount($userId, $bankAccountId)
     {
-        return $this->GetObject('users_getbankaccount', $userId, 'MangoPay\BankAccount', $bankAccountId);
+        return $this->GetObject('users_getbankaccount', 'MangoPay\BankAccount', $userId, $bankAccountId);
     }
 
     /**
@@ -173,9 +273,9 @@ class ApiUsers extends Libraries\ApiBase
      *
      * @return \MangoPay\Wallet[] Array with objects returned from API
      */
-    public function GetWallets($userId, & $pagination = null, $sorting = null)
+    public function GetWallets($userId, & $pagination = null, $sorting = null, $filter = null)
     {
-        return $this->GetList('users_allwallets', $pagination, 'MangoPay\Wallet', $userId, null, $sorting);
+        return $this->GetList('users_allwallets', $pagination, 'MangoPay\Wallet', $userId, $filter, $sorting);
     }
 
     /**
@@ -196,13 +296,14 @@ class ApiUsers extends Libraries\ApiBase
      * Get all cards for user
      * @param string $userId User Id
      * @param \MangoPay\Pagination $pagination Pagination object
+     * @param \MangoPay\FilterCards $filter Object to filter data
      * @param \MangoPay\Sorting $sorting Object to sorting data
      *
      * @return \MangoPay\Card[] Cards for user returned from API
      */
-    public function GetCards($userId, & $pagination = null, $sorting = null)
+    public function GetCards($userId, & $pagination = null, $filter = null, $sorting = null)
     {
-        return $this->GetList('users_allcards', $pagination, '\MangoPay\Card', $userId, null, $sorting);
+        return $this->GetList('users_allcards', $pagination, '\MangoPay\Card', $userId, $filter, $sorting);
     }
 
     /**
@@ -239,7 +340,7 @@ class ApiUsers extends Libraries\ApiBase
      */
     public function GetKycDocument($userId, $kycDocumentId)
     {
-        return $this->GetObject('kyc_documents_get', $userId, '\MangoPay\KycDocument', $kycDocumentId);
+        return $this->GetObject('kyc_documents_get', '\MangoPay\KycDocument', $userId, $kycDocumentId);
     }
 
     /**
@@ -287,31 +388,28 @@ class ApiUsers extends Libraries\ApiBase
      * @param string $userId User Id
      * @param string $kycDocumentId KYC Document Id
      * @param \MangoPay\KycPage $kycPage KYC Page
-     * @return bool `true` if the upload was successful, `false` otherwise
+     * @return true always true. If an error occurred, a \MangoPay\Libraries\Exception is thrown
      * @throws \MangoPay\Libraries\Exception
      */
     public function CreateKycPage($userId, $kycDocumentId, $kycPage, $idempotencyKey = null)
     {
-        $uploaded = false;
         try {
-            $response = $this->CreateObject('kyc_page_create', $kycPage, null, $userId, $kycDocumentId, $idempotencyKey);
-            $uploaded = true;
+            $this->CreateObject('kyc_page_create', $kycPage, null, $userId, $kycDocumentId, $idempotencyKey);
         } catch (\MangoPay\Libraries\ResponseException $exc) {
             if ($exc->getCode() != 204) {
                 throw $exc;
-            } else {
-                $uploaded = true;
             }
         }
-        return $uploaded;
+
+        return true;
     }
 
     /**
      * Create page for Kyc document from file
      * @param string $userId User Id
-     * @param int $kycDocumentId KYC Document Id
+     * @param string $kycDocumentId KYC Document Id
      * @param string $filePath File path
-     * @return bool `true` if the upload was successful, `false` otherwise
+     * @return true always true. If an error occurred, a \MangoPay\Libraries\Exception is thrown
      * @throws \MangoPay\Libraries\Exception
      */
     public function CreateKycPageFromFile($userId, $kycDocumentId, $filePath, $idempotencyKey = null)
@@ -337,22 +435,28 @@ class ApiUsers extends Libraries\ApiBase
     /**
      * Get user EMoney
      * @param string $userId User Id
-     * @return \MangoPay\EMoney EMoney obhect returned from API
+     * @param $year
+     * @param $month
+     * @return \MangoPay\EMoney EMoney object returned from API
+     * @throws Libraries\Exception
      */
-    public function GetEMoney($userId)
+    public function GetEMoney($userId, $year = null, $month = null)
     {
-        return $this->GetObject('users_getemoney', $userId, '\MangoPay\EMoney');
+        if ($year == null) {
+            $year = $this->GetCurrentYear();
+        }
+
+        $methodKey = $month == null ? 'users_getemoney_year' : 'users_getemoney_month';
+        return $this->GetObject($methodKey, '\MangoPay\EMoney', $userId, $year, $month);
     }
 
     /**
-     * Create a UBO declaration.
-     * @param string $userId ID of the legal user owning the declaration
-     * @param \MangoPay\UboDeclaration $declaration UBO declaration data
-     * @return \MangoPay\UboDeclaration Newly-created UBO declaration object
+     * Get the current year
+     * @return int currentYear
      */
-    public function CreateUboDeclaration($userId, $declaration)
+    private function GetCurrentYear()
     {
-        return $this->CreateObject('ubo_declaration_create', $declaration, '\MangoPay\UboDeclaration', $userId);
+        return (new \DateTime())->format("Y");
     }
 
     /**
@@ -372,7 +476,7 @@ class ApiUsers extends Libraries\ApiBase
     /**
      * Get correct user object
      * @param object $response Response from API
-     * @return UserLegal|UserNatural User object returned from API
+     * @return UserLegal|UserNatural|UserNaturalSca|UserLegalSca User object returned from API
      * @throws \MangoPay\Libraries\Exception If occur unexpected response from API
      */
     private function GetUserResponse($response)
@@ -380,8 +484,18 @@ class ApiUsers extends Libraries\ApiBase
         if (isset($response->PersonType)) {
             switch ($response->PersonType) {
                 case PersonType::Natural:
+                    // if the json has SCA related properties -> deserialize to UserNaturalSca
+                    // !!! THIS LOGIC SHOULD NOT BE CHANGED ON API SIDE !!!
+                    if (property_exists($response, "PendingUserAction")) {
+                        return $this->CastResponseToEntity($response, '\MangoPay\UserNaturalSca');
+                    }
                     return $this->CastResponseToEntity($response, '\MangoPay\UserNatural');
                 case PersonType::Legal:
+                    // if the json has SCA related properties -> deserialize to UserLegalSca
+                    // !!! THIS LOGIC SHOULD NOT BE CHANGED ON API SIDE !!!
+                    if (property_exists($response, "PendingUserAction")) {
+                        return $this->CastResponseToEntity($response, '\MangoPay\UserLegalSca');
+                    }
                     return $this->CastResponseToEntity($response, '\MangoPay\UserLegal');
                 default:
                     throw new Libraries\Exception('Unexpected response. Wrong PersonType value');
@@ -399,5 +513,93 @@ class ApiUsers extends Libraries\ApiBase
 
         $className = str_replace('MangoPay\\BankAccountDetails', '', get_class($bankAccount->Details));
         return strtolower($className);
+    }
+
+    /**
+     * Get the Block Status of a User
+     * @param string $userId User identifier
+     * @return UserBlockStatus User object returned from API
+     */
+    public function GetBlockStatus($userId)
+    {
+        return $this->GetObject('users_block_status', 'MangoPay\UserBlockStatus', $userId);
+    }
+
+    /**
+     * Get the Block Status Regulatory  of a User
+     * @param string $userId User identifier
+     * @return UserBlockStatus User object returned from API
+     */
+    public function GetRegulatory($userId)
+    {
+        return $this->GetObject('users_block_status_regulatory', 'MangoPay\UserBlockStatus', $userId);
+    }
+
+    /**
+     * This call allows you to check the validity of the format
+     * of a piece of user data, and to retrieve the validation rules applied to it.
+     * @param $companyNumberDetails
+     * @return \MangoPay\CompanyNumberDetails
+     */
+    public function ValidateTheFormatOfUserData($companyNumberDetails)
+    {
+        return $this->ExecutePostRequest('validate_the_format_of_user_data', $companyNumberDetails, '\MangoPay\CompanyNumberDetails');
+    }
+
+    /**
+     * If UserCategory is OWNER, this endpoint allows you to enroll a user in SCA.
+     * Your platform needs to retrieve the returned PendingUserAction.RedirectUrl,
+     * add an encoded returnUrl query parameter for them to be returned to after the SCA session, and redirect the user.
+     * @param string $userId
+     * @return UserEnrollmentResult User object returned from API
+     * @throws Libraries\Exception If occur Wrong entity class for user
+     */
+    public function Enroll($userId, $idempotencyKey = null)
+    {
+        return $this->ExecutePostRequest(
+            'users_enroll_sca',
+            new UserNatural(),
+            '\MangoPay\UserEnrollmentResult',
+            $userId,
+            $idempotencyKey
+        );
+    }
+
+    /**
+     * Manage user consent
+     *
+     * @param string $userId
+     * @return UserConsent User object returned from API
+     * @throws Libraries\Exception If occur Wrong entity class for user
+     */
+    public function ManageConsent($userId, $idempotencyKey = null)
+    {
+        return $this->CreateObject(
+            'users_manage_consent',
+            null,
+            '\MangoPay\UserConsent',
+            $userId,
+            null,
+            $idempotencyKey
+        );
+    }
+
+    /**
+     * Close user (change status to CLOSED). The resource remains available for historical purposes.
+     * @param UserLegal|UserNatural|UserLegalSca|UserNaturalSca $user
+     * @throws Libraries\Exception If occur Wrong entity class for user
+     */
+    public function Close($user)
+    {
+        $className = get_class($user);
+        if ($className == 'MangoPay\UserNatural' || $className == 'MangoPay\UserNaturalSca') {
+            $methodKey = 'users_close_natural';
+        } elseif ($className == 'MangoPay\UserLegal' || $className == 'MangoPay\UserLegalSca') {
+            $methodKey = 'users_close_legal';
+        } else {
+            throw new Libraries\Exception('Wrong entity class for user');
+        }
+
+        $this->DeleteObject($methodKey, $user);
     }
 }

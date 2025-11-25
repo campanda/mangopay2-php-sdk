@@ -1,4 +1,5 @@
 <?php
+
 namespace MangoPay;
 
 use Psr\Log\LoggerInterface;
@@ -168,6 +169,11 @@ class MangoPayApi
      */
     public $Repudiations;
 
+    /**
+     * Provides VirtualAccount methods
+     * @var ApiVirtualAccounts
+     */
+    public $VirtualAccounts;
 
     /**
      * @var LoggerInterface
@@ -183,6 +189,48 @@ class MangoPayApi
      * @var RateLimit[] Holds data as specified by X-RateLimit response headers.
      */
     public $RateLimits;
+
+    /**
+     * Provides Regulatory methods
+     * @var ApiRegulatory
+     */
+    public $Regulatory;
+
+    /**
+     * Provides Deposit methods
+     * @var ApiDeposits
+     */
+    public $Deposits;
+
+    /**
+     * Provides Instant conversion API methods
+     * @var ApiConversions
+     */
+    public $Conversions;
+
+    /**
+     * Provides IdentityVerifications methods.
+     * @var ApiIdentityVerification
+     */
+    public $IdentityVerifications;
+
+    /**
+     * Recipients methods
+     * @var ApiRecipients
+     */
+    public $Recipients;
+
+    /**
+     * Provides reports request methods
+     * @var ApiReportsV2
+     */
+    public $ReportsV2;
+
+    /**
+     * Provides settlements request methods
+     * @var ApiSettlements
+     */
+    public $Settlements;
 
     /**
      * Constructor
@@ -218,6 +266,14 @@ class MangoPayApi
         $this->UboDeclarations = new ApiUboDeclarations($this);
         $this->BankAccounts = new ApiBankAccounts($this);
         $this->Repudiations = new ApiRepudiations($this);
+        $this->Regulatory = new ApiRegulatory($this);
+        $this->Deposits = new ApiDeposits($this);
+        $this->Conversions = new ApiConversions($this);
+        $this->VirtualAccounts = new ApiVirtualAccounts($this);
+        $this->IdentityVerifications = new ApiIdentityVerification($this);
+        $this->Recipients = new ApiRecipients($this);
+        $this->ReportsV2 = new ApiReportsV2($this);
+        $this->Settlements = new ApiSettlements($this);
 
         // Setting default NullLogger
         $this->logger = new NullLogger();
@@ -239,7 +295,7 @@ class MangoPayApi
     {
         return $this->logger;
     }
-    
+
     /**
      * @return Libraries\Configuration
      */
@@ -259,7 +315,7 @@ class MangoPayApi
     /**
      * @param \MangoPay\Libraries\HttpBase $httpClient
      */
-    public function setHttpClient(\MangoPay\Libraries\HttpBase $httpClient)
+    public function setHttpClient(Libraries\HttpBase $httpClient)
     {
         $this->httpClient = $httpClient;
     }

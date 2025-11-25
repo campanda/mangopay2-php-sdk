@@ -1,4 +1,5 @@
 <?php
+
 namespace MangoPay;
 
 /**
@@ -17,13 +18,13 @@ class Refund extends Transaction
      * @var string
      */
     public $InitialTransactionType;
-    
+
     /**
      * Debited wallet Id
      * @var string
      */
     public $DebitedWalletId;
-    
+
     /**
      * Credited wallet Id
      * @var string
@@ -35,7 +36,17 @@ class Refund extends Transaction
      * @var \MangoPay\RefundReasonDetails
      */
     public $RefundReason;
-    
+
+    /**
+     * @var string
+     */
+    public $Reference;
+
+    /**
+     * @var string
+     */
+    public $StatementDescriptor;
+
     /**
      * Get array with mapping which property is object and what type of object
      *
@@ -45,7 +56,7 @@ class Refund extends Transaction
     {
         $subObjects = parent::GetSubObjects();
         $subObjects['RefundReason'] = '\MangoPay\RefundReasonDetails';
-        
+
         return $subObjects;
     }
 }

@@ -1,16 +1,17 @@
 <?php
+
 namespace MangoPay;
 
 /**
  * Class to management MangoPay API for disputes
  */
+
 /**
  * Class ApiDisputes
  * @package MangoPay
  */
 class ApiDisputes extends Libraries\ApiBase
 {
-    
     /**
      * Gets dispute
      * @param string $disputeId Dispute identifier
@@ -18,9 +19,9 @@ class ApiDisputes extends Libraries\ApiBase
      */
     public function Get($disputeId)
     {
-        return $this->GetObject('disputes_get', $disputeId, '\MangoPay\Dispute');
+        return $this->GetObject('disputes_get', '\MangoPay\Dispute', $disputeId);
     }
-    
+
     /**
      * Get all disputes
      * @param \MangoPay\Pagination $pagination Pagination object
@@ -32,8 +33,8 @@ class ApiDisputes extends Libraries\ApiBase
     {
         return $this->GetList('disputes_all', $pagination, '\MangoPay\Dispute', null, $filter, $sorting);
     }
-    
-     /**
+
+    /**
      * List Disputes that need settling
      * @param \MangoPay\Pagination $pagination Pagination object
      * @param \MangoPay\Sorting $sorting Object to sorting data
@@ -43,10 +44,10 @@ class ApiDisputes extends Libraries\ApiBase
     {
         return $this->GetList('disputes_pendingsettlement', $pagination, '\MangoPay\Dispute', null, null, $sorting);
     }
-    
+
     /**
      * Updates dispute's tag
-     * @param \MangoPay\Dispute Dispute object to update
+     * @param \MangoPay\Dispute $dispute Dispute object to update
      * @return \MangoPay\Dispute Transfer instance returned from API
      */
     public function Update($dispute)
@@ -79,7 +80,7 @@ class ApiDisputes extends Libraries\ApiBase
         $dispute->Id = $disputeId;
         return $this->SaveObject('disputes_save_contest_funds', $dispute, '\MangoPay\Dispute');
     }
-    
+
     /**
      * Close dispute
      * @param string $disputeId Dispute identifier
@@ -133,7 +134,28 @@ class ApiDisputes extends Libraries\ApiBase
     {
         return $this->GetList('disputes_get_for_user', $pagination, 'MangoPay\Dispute', $userId, $filter, $sorting);
     }
-    
+
+    /**
+     * Gets payin's disputes
+     * @param string $payInId PayIn identifier
+     * @param \MangoPay\Pagination $pagination Pagination object
+     * @param \MangoPay\Sorting $sorting Object to sorting data
+     * @param \MangoPay\FilterDisputes $filter Filtering object
+     * @return \MangoPay\Dispute[] List of Dispute instances returned from API
+     * @throws Libraries\Exception
+     */
+    public function GetDisputesForPayIn($payInId, & $pagination = null, $sorting = null, $filter = null)
+    {
+        return $this->GetList(
+            'disputes_get_for_payin',
+            $pagination,
+            'MangoPay\Dispute',
+            $payInId,
+            $filter,
+            $sorting
+        );
+    }
+
     /**
      * Gets repudiation
      * @param string $repudiationId Repudiation identifier
@@ -141,9 +163,9 @@ class ApiDisputes extends Libraries\ApiBase
      */
     public function GetRepudiation($repudiationId)
     {
-        return $this->GetObject('disputes_repudiation_get', $repudiationId, 'MangoPay\Repudiation');
+        return $this->GetObject('disputes_repudiation_get', 'MangoPay\Repudiation', $repudiationId);
     }
-    
+
     /**
      * Creates settlement transfer
      * @param \MangoPay\SettlementTransfer $settlementTransfer Settlement transfer
@@ -154,7 +176,7 @@ class ApiDisputes extends Libraries\ApiBase
     {
         return $this->CreateObject('disputes_repudiation_create_settlement', $settlementTransfer, '\MangoPay\Transfer', $repudiationId, null, $idempotencyKey);
     }
-    
+
     /**
      * Gets settlement transfer
      * @param string $settlementTransferId Settlement transfer identifier
@@ -162,7 +184,7 @@ class ApiDisputes extends Libraries\ApiBase
      */
     public function GetSettlementTransfer($settlementTransferId)
     {
-        return $this->GetObject('disputes_repudiation_get_settlement', $settlementTransferId, '\MangoPay\SettlementTransfer');
+        return $this->GetObject('disputes_repudiation_get_settlement', '\MangoPay\SettlementTransfer', $settlementTransferId);
     }
 
     /**
@@ -178,7 +200,7 @@ class ApiDisputes extends Libraries\ApiBase
     {
         return $this->GetList('disputes_document_get_for_dispute', $pagination, 'MangoPay\DisputeDocument', $disputeId, $filter, $sorting);
     }
-        
+
     /**
      * Update dispute document
      * @param string $disputeId Dispute identifier
@@ -189,7 +211,7 @@ class ApiDisputes extends Libraries\ApiBase
     {
         return $this->SaveObject('disputes_document_save', $disputeDocument, '\MangoPay\DisputeDocument', $disputeId);
     }
-        
+
     /**
      * Creates document for dispute
      * @param string $disputeId Dispute identifier
@@ -200,7 +222,7 @@ class ApiDisputes extends Libraries\ApiBase
     {
         return $this->CreateObject('disputes_document_create', $disputeDocument, '\MangoPay\DisputeDocument', $disputeId, null, $idempotencyKey);
     }
-    
+
     /**
      * Creates document's page for dispute
      * @param string $disputeId Dispute identifier
@@ -217,7 +239,7 @@ class ApiDisputes extends Libraries\ApiBase
             }
         }
     }
-    
+
     /**
      * Creates document's page for dispute from file
      * @param string $disputeId Dispute identifier
@@ -231,22 +253,22 @@ class ApiDisputes extends Libraries\ApiBase
         if (is_array($file)) {
             $filePath = $file['tmp_name'];
         }
-        
+
         if (empty($filePath)) {
             throw new \MangoPay\Libraries\Exception('Path of file cannot be empty');
         }
-        
+
         if (!file_exists($filePath)) {
             throw new \MangoPay\Libraries\Exception('File not exist');
         }
-        
+
         $disputeDocumentPage = new \MangoPay\DisputeDocumentPage();
         $disputeDocumentPage->File = base64_encode(file_get_contents($filePath));
-        
+
         if (empty($disputeDocumentPage->File)) {
             throw new \MangoPay\Libraries\Exception('Content of the file cannot be empty');
         }
-        
+
         $this->CreateDisputeDocumentPage($disputeId, $disputeDocumentId, $disputeDocumentPage, $idempotencyKey);
     }
 }

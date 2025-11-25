@@ -12,19 +12,43 @@ abstract class User extends Libraries\EntityBase
      * @var string
      */
     public $PersonType;
-    
+
     /**
      * Email address
      * @var string
      */
     public $Email;
-    
+
     /**
      * KYC Level (LIGHT or REGULAR)
      * @var string
      */
     public $KYCLevel;
-    
+
+    /**
+     * Whether the user has accepted the MANGOPAY Terms and Conditions.
+     * @var bool
+     */
+    public $TermsAndConditionsAccepted;
+
+    /**
+     * The date on which the user has accepted the MANGOPAY Terms and Conditions.
+     * @var int
+     */
+    public $TermsAndConditionsAcceptedDate;
+
+    /**
+     * Category of user
+     * @var string
+     */
+    public $UserCategory;
+
+    /**
+     * Status of user
+     * @var string
+     */
+    public $UserStatus;
+
     /**
      * Construct
      * @param string $personType string with type of person
@@ -33,7 +57,7 @@ abstract class User extends Libraries\EntityBase
     {
         $this->PersonType = $personType;
     }
-    
+
     /**
      * Get array with read-only properties
      * @return array
@@ -41,8 +65,8 @@ abstract class User extends Libraries\EntityBase
     public function GetReadOnlyProperties()
     {
         $properties = parent::GetReadOnlyProperties();
-        array_push($properties, 'PersonType');
-        
+        array_push($properties, 'PersonType', 'TermsAndConditionsAcceptedDate');
+
         return $properties;
     }
 }

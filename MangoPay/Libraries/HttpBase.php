@@ -1,4 +1,5 @@
 <?php
+
 namespace MangoPay\Libraries;
 
 /**
@@ -11,6 +12,12 @@ abstract class HttpBase
      * @var \MangoPay\MangoPayApi
      */
     protected $_root;
+
+    /**
+     * Root/parent instance logger
+     * @var \Psr\Log\LoggerInterface|\Psr\Log\NullLogger
+     */
+    protected $logger;
 
     /**
      * Constructor
